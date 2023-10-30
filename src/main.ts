@@ -1,8 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { applicationConfig } from 'config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+
+  const res = await app.listen(applicationConfig.app.port, '0.0.0.0');
+  const serverAddress = res.address();
+  
+  console.log(
+    `⚡ Server is listening at http://${serverAddress.address}:${serverAddress.port}`,
+  );
 }
 bootstrap();
