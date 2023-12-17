@@ -1,26 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { CreateReviewRequestDto } from './dto/create-review-request.dto';
 import { UpdateReviewRequestDto } from './dto/update-review-request.dto';
+import { InjectModel } from '@nestjs/sequelize';
+import { ReviewRequest } from './entities/review-request.entity';
 
 @Injectable()
 export class ReviewRequestsService {
-  create(createReviewRequestDto: CreateReviewRequestDto) {
-    return 'This action adds a new reviewRequest';
+  constructor(
+    @InjectModel(ReviewRequest)
+    private readonly reviewRequestModel: typeof ReviewRequest,
+  ) {}
+  async update(payload = {}, condition = {}) {
+    return this.reviewRequestModel.update(payload, {where: condition});
   }
 
-  findAll() {
-    return `This action returns all reviewRequests`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} reviewRequest`;
-  }
-
-  update(id: number, updateReviewRequestDto: UpdateReviewRequestDto) {
-    return `This action updates a #${id} reviewRequest`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} reviewRequest`;
+  async findOne(payload = {}) {
+    return this.reviewRequestModel.findOne({ where: payload });
   }
 }

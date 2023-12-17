@@ -18,10 +18,16 @@ export class ReviewRequest extends Model {
   product_id: string;
 
   @Column({allowNull: false, defaultValue: false })
-  is_reviewed: boolean;
+  isReviewed: boolean;
+
+  @Column({allowNull: false, defaultValue: false })
+  isPublished: boolean;
 
   @Column({allowNull: true })
-  rating_star: number;
+  ratingStar: number;
+
+  @Column({allowNull: true })
+  ratingMessage: string;
 
   @CreatedAt
   createdAt: Date;
