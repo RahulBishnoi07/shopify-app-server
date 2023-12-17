@@ -1,17 +1,19 @@
-import { Controller, Post, Query } from '@nestjs/common';
+import { Controller, Get, Query, Res } from '@nestjs/common';
 import { ReviewRequestsService } from './review-requests.service';
+import { Response } from 'express';
 
 @Controller('review-requests')
 export class ReviewRequestsController {
   constructor(private readonly reviewRequestsService: ReviewRequestsService) {}
 
-  @Post('/update')
+  @Get('/update')
   async updateReviewRequest(
-    @Query('id') id: string,
-    @Query('ratingStar') ratingStar: string,
-    @Query('ratingMessage') ratingMessage?: string,
+    @Query('reviewId') id: string,
+    @Query('rating') ratingStar: string,
+    @Query('review') ratingMessage?: string,
+    @Res() res?: Response,
   ) {
-    try {      
+    try {
       const obj = await this.reviewRequestsService.findOne({ id });
       if (!obj) {
         throw new Error('Throw');
@@ -25,7 +27,7 @@ export class ReviewRequestsController {
         },
         { id: parseInt(id) },
       );
-      return "Succesfully update";
+      return res.redirect('http://localhost:3000/thankyou');
     } catch (error) {
       throw error;
     }
