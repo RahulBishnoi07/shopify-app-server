@@ -8,6 +8,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { applicationConfig } from 'config';
 import { Dialect } from 'sequelize/types';
 import { ReviewRequest } from './review-requests/entities/review-request.entity';
+import { Store } from './store/store.entity';
 
 @Module({
   imports: [
@@ -34,11 +35,12 @@ import { ReviewRequest } from './review-requests/entities/review-request.entity'
       port: parseInt(applicationConfig.db.port, 10),
       database: applicationConfig.db.name,
       models: [
-        ReviewRequest
+        ReviewRequest,
+        Store
       ],
       logging: false,
     }),
-    ReviewRequestsModule
+    ReviewRequestsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
