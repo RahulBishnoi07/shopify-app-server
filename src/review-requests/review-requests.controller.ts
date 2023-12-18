@@ -2,7 +2,6 @@ import { Controller, Get, Query, Res } from '@nestjs/common';
 import { ReviewRequestsService } from './review-requests.service';
 import { Response } from 'express';
 import axios from 'axios';
-import queryString from 'query-string';
 import { Store } from 'src/store/store.entity';
 import { InjectModel } from '@nestjs/sequelize';
 
@@ -58,16 +57,15 @@ export class ReviewRequestsController {
     console.log('code', code, 'shop', shop);
 
     const accessTokenUrl = `https://${shop}/admin/oauth/access_token`;
-    const accessParams = {
-      client_id: apiKey,
-      client_secret: apiSecret,
-      code,
-    };
+    const accessParams = new URLSearchParams();
+    accessParams.append('client_id', apiKey);
+    accessParams.append('client_secret', apiSecret);
+    accessParams.append('code', code);
 
     try {
       const response = await axios.post(
         accessTokenUrl,
-        queryString.stringify(accessParams),
+        accessParams.toString(),
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
