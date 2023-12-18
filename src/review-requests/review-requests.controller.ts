@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
-import { ReviewRequestsService } from './review-requests.service';
-import { Request, Response } from 'express';
+import {Controller, Get, Post, Query, Req, Res} from '@nestjs/common';
+import {ReviewRequestsService} from './review-requests.service';
+import {Request, Response} from 'express';
 // import axios from 'axios';
-import { StoreData } from 'src/store/store-data.entity';
-import { InjectModel } from '@nestjs/sequelize';
+import {StoreData} from 'src/store/store-data.entity';
+import {InjectModel} from '@nestjs/sequelize';
 import axios from 'axios';
+import {sendReviewEmail} from 'src/service/send-review-email';
 
 @Controller('review-requests')
 export class ReviewRequestsController {
@@ -22,7 +23,7 @@ export class ReviewRequestsController {
     @Res() res?: Response,
   ) {
     try {
-      const obj = await this.reviewRequestsService.findOne({ id });
+      const obj = await this.reviewRequestsService.findOne({id});
       if (!obj) {
         throw new Error('Throw');
       }
@@ -33,7 +34,7 @@ export class ReviewRequestsController {
           ratingStar: parseInt(ratingStar),
           ratingMessage,
         },
-        { id: parseInt(id) },
+        {id: parseInt(id)},
       );
       return res.redirect('http://localhost:3000/thankyou');
     } catch (error) {
@@ -45,7 +46,7 @@ export class ReviewRequestsController {
   async authCallback(
     @Query('code') code: string,
     @Query('shop') shop: string,
-    @Res({ passthrough: true }) res?: Response,
+    @Res({passthrough: true}) res?: Response,
   ) {
     const apiKey = process.env.SHOPIFY_API_KEY;
     const apiSecret = process.env.SHOPIFY_API_PASSWORD;
@@ -73,7 +74,7 @@ export class ReviewRequestsController {
         },
       );
 
-      const { access_token } = response.data;
+      const {access_token} = response.data;
       const storeName = shop.split('.')[0];
 
       await this.storeModel.create({
@@ -121,8 +122,32 @@ export class ReviewRequestsController {
             productId: webhookData.line_items[0].product_id.toString(),
             productName: webhookData.line_items[0].title,
           };
+
+
           console.log(fulfilledData);
-          await this.reviewRequestsService.create( fulfilledData );
+          const obj = await this.reviewRequestsService.create(fulfilledData);
+
+          let requestId = obj.id;
+
+          let productName = webhookData.line_items[0].title;
+          let productImageUrl = 'https://i.pinimg.com/736x/8e/91/fb/8e91fb69af746f12a30562016812e85f.jpg';
+
+          let redirectUri =
+            "https://2c0b-2401-4900-1c54-4d84-dde2-a72-3f7-926.ngrok-free.app/review-requests/update";
+
+          let webUrl = "http://localhost:3000/feedback";
+
+          let reviewPageUrl = `${webUrl}?product_name=${productName}&product_image_url=${productImageUrl}&request_id=${requestId}&redirect_uri=${redirectUri}`;
+
+
+          await sendReviewEmail({
+            productImageUrl: productImageUrl,
+            productName: webhookData.line_items[0].title,
+            receiverEmail: 'shreyamaheswari@gmail.com',
+            receiverName: `Shreya Maheshwari`,
+            reviewPageUrl: reviewPageUrl,
+          });
+
           break;
         // Add more cases for other webhook topics if needed
       }
