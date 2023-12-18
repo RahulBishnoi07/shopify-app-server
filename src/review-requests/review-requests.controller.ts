@@ -122,7 +122,7 @@ export class ReviewRequestsController {
             productName: webhookData.line_items[0].title,
           };
           console.log(fulfilledData);
-          await this.reviewRequestsService.create({ fulfilledData });
+          await this.reviewRequestsService.create( fulfilledData );
           break;
         // Add more cases for other webhook topics if needed
       }
