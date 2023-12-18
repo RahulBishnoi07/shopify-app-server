@@ -3,10 +3,10 @@ import { ReviewRequestsService } from './review-requests.service';
 import { ReviewRequestsController } from './review-requests.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ReviewRequest } from './entities/review-request.entity';
-import { Store } from 'src/store/store.entity';
+import { StoreData } from 'src/store/store-data.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([ReviewRequest, Store])],
+  imports: [SequelizeModule.forFeature([ReviewRequest, StoreData])],
   controllers: [ReviewRequestsController],
   providers: [ReviewRequestsService],
 })

@@ -1,16 +1,17 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
 import { ReviewRequestsService } from './review-requests.service';
-import { Response } from 'express';
-import axios from 'axios';
-import { Store } from 'src/store/store.entity';
+import { Request, Response } from 'express';
+// import axios from 'axios';
+import { StoreData } from 'src/store/store-data.entity';
 import { InjectModel } from '@nestjs/sequelize';
+import axios from 'axios';
 
 @Controller('review-requests')
 export class ReviewRequestsController {
   constructor(
     private readonly reviewRequestsService: ReviewRequestsService,
-    @InjectModel(Store)
-    private readonly storeModel: typeof Store,
+    @InjectModel(StoreData)
+    private readonly storeModel: typeof StoreData,
   ) {}
 
   @Get('/update')
@@ -50,8 +51,8 @@ export class ReviewRequestsController {
     const apiSecret = process.env.SHOPIFY_API_PASSWORD;
 
     if (!code || !shop) {
-      res.send('Missing code or shop parameter');
-      return;
+      return res.send('Missing code or shop parameter');
+      
     }
 
     console.log('code', code, 'shop', shop);
@@ -76,25 +77,12 @@ export class ReviewRequestsController {
       const { access_token } = response.data;
       const storeName = shop.split('.')[0];
 
-      const storeData = await this.storeModel.findOne({
-        where: {
-          storeName,
-        },
-      });
-
-      if (!storeData) {
-        return res.send('Store not found');
-      }
-
-      await this.storeModel.update(
+      await this.storeModel.create(
         {
+          storeName,
+          email: 'amitgodara1008@gmail.com',
           accessToken: access_token,
           isAppInstall: true,
-        },
-        {
-          where: {
-            storeName,
-          },
         },
       );
 
@@ -104,7 +92,41 @@ export class ReviewRequestsController {
       return res.redirect(`https://google.co.in`);
     } catch (error) {
       console.log(error);
-      res.send('Error while OAuth process');
+      return res.send('Error while OAuth process');
+    }
+  }
+
+  @Post('/webhook/order-create')
+  async orderFullfilledWebhook(
+    @Req() req: Request,
+    @Res() res: Response
+  ) {
+    try {
+      // Verify the request is from Shopify
+      // Implement request verification logic here
+      // Parse the incoming webhook payload
+      const webhookData = req.body;
+      console.log("WEBHOOK RECEIVED", req.route.path);
+  
+      // Handle the specific event based on the 'topic' in the payload
+      switch (req.route.path) {
+        case "/review-requests/webhook/order-create":
+          const fulfilledData = {
+            customerName: `${webhookData.customer.first_name} ${webhookData.customer.last_name}`,
+            customerEmail: webhookData.customer.email,
+            orderNumber: webhookData.order_number.toString(),
+            productId: webhookData.line_items[0].product_id.toString(),
+            productName: webhookData.line_items[0].title,
+          };
+          console.log(fulfilledData);
+          break;
+        // Add more cases for other webhook topics if needed
+      }
+  
+      // Respond to the webhook request
+      res.status(200).send("Webhook received successfully");
+    } catch (error) {
+      res.status(500).send("Internal Server Error");
     }
   }
 }

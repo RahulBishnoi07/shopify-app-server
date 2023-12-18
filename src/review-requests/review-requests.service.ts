@@ -18,11 +18,11 @@ export class ReviewRequestsService {
   }
 
   async registerWebhook(shop, accessToken) {
-    const webhookEndpoint = `http://localhost:8808/webhook/order-fulfilled`;
+    const webhookEndpoint = `https://7331-2405-201-5011-217a-48d1-12a4-d20d-bb7a.ngrok-free.app/review-requests/webhook/order-create`;
   
     const webhookPayload = {
       webhook: {
-        topic: "orders/fulfilled",
+        topic: "orders/create",
         address: webhookEndpoint,
         format: "json",
       },

@@ -8,7 +8,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { applicationConfig } from 'config';
 import { Dialect } from 'sequelize/types';
 import { ReviewRequest } from './review-requests/entities/review-request.entity';
-import { Store } from './store/store.entity';
+import { StoreData } from './store/store-data.entity';
 
 @Module({
   imports: [
@@ -36,7 +36,7 @@ import { Store } from './store/store.entity';
       database: applicationConfig.db.name,
       models: [
         ReviewRequest,
-        Store
+        StoreData
       ],
       logging: false,
     }),

@@ -10,8 +10,8 @@ import {
     Default,
   } from "sequelize-typescript";
   
-  @Table({ underscored: true, tableName: "store" })
-  export class Store extends Model {
+  @Table({ underscored: true })
+  export class StoreData extends Model {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column({ type: DataType.UUID, allowNull: false })
