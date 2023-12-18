@@ -9,6 +9,11 @@ export class ReviewRequestsService {
     @InjectModel(ReviewRequest)
     private readonly reviewRequestModel: typeof ReviewRequest,
   ) {}
+
+  async create(payload = {}){
+    return this.reviewRequestModel.create(payload);
+  }
+  
   async update(payload = {}, condition = {}) {
     return this.reviewRequestModel.update(payload, {where: condition});
   }

@@ -52,7 +52,6 @@ export class ReviewRequestsController {
 
     if (!code || !shop) {
       return res.send('Missing code or shop parameter');
-      
     }
 
     console.log('code', code, 'shop', shop);
@@ -77,19 +76,19 @@ export class ReviewRequestsController {
       const { access_token } = response.data;
       const storeName = shop.split('.')[0];
 
-      await this.storeModel.create(
-        {
-          storeName,
-          email: 'amitgodara1008@gmail.com',
-          accessToken: access_token,
-          isAppInstall: true,
-        },
-      );
+      await this.storeModel.create({
+        storeName,
+        email: 'amitgodara1008@gmail.com',
+        accessToken: access_token,
+        isAppInstall: true,
+      });
 
       await this.reviewRequestsService.registerWebhook(shop, access_token);
 
       // res.send("Successfully connected to Shopify!");
-      return res.redirect(`https://admin.shopify.com/store/test-review-ap/apps/testing-mate`);
+      return res.redirect(
+        `https://admin.shopify.com/store/test-review-ap/apps/testing-mate`,
+      );
     } catch (error) {
       console.log(error);
       return res.send('Error while OAuth process');
@@ -97,36 +96,41 @@ export class ReviewRequestsController {
   }
 
   @Post('/webhook/order-create')
-  async orderFullfilledWebhook(
-    @Req() req: Request,
-    @Res() res: Response
-  ) {
+  async orderFullfilledWebhook(@Req() req: Request, @Res() res: Response) {
     try {
       // Verify the request is from Shopify
       // Implement request verification logic here
       // Parse the incoming webhook payload
       const webhookData = req.body;
-      console.log("WEBHOOK RECEIVED", req.route.path);
-  
+      console.log('WEBHOOK RECEIVED', req.route.path);
+
       // Handle the specific event based on the 'topic' in the payload
       switch (req.route.path) {
-        case "/review-requests/webhook/order-create":
+        case '/review-requests/webhook/order-create':
+          // const fulfilledData = {
+          //   customerName: `${webhookData.customer.first_name} ${webhookData.customer.last_name}`,
+          //   customerEmail: webhookData.customer.email,
+          //   orderNumber: webhookData.order_number.toString(),
+          //   productId: webhookData.line_items[0].product_id.toString(),
+          //   productName: webhookData.line_items[0].title,
+          // };
           const fulfilledData = {
-            customerName: `${webhookData.customer.first_name} ${webhookData.customer.last_name}`,
-            customerEmail: webhookData.customer.email,
-            orderNumber: webhookData.order_number.toString(),
+            storeId: 'test-review-app',
+            name: `Shreya Maheshwari`,
+            email: 'shreyamaheswari@gmail.com',
             productId: webhookData.line_items[0].product_id.toString(),
             productName: webhookData.line_items[0].title,
           };
           console.log(fulfilledData);
+          await this.reviewRequestsService.create( fulfilledData );
           break;
         // Add more cases for other webhook topics if needed
       }
-  
+
       // Respond to the webhook request
-      res.status(200).send("Webhook received successfully");
+      res.status(200).send('Webhook received successfully');
     } catch (error) {
-      res.status(500).send("Internal Server Error");
+      res.status(500).send('Internal Server Error');
     }
   }
 }

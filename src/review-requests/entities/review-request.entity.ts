@@ -2,11 +2,11 @@ import { Column, CreatedAt, DeletedAt, Model, Table, UpdatedAt } from "sequelize
 
 @Table({ underscored: true })
 export class ReviewRequest extends Model {
-  @Column({ primaryKey: true, allowNull: false })
-  id: string;
+  @Column({ primaryKey: true, allowNull: false, autoIncrement: true })
+  id: number;
 
   @Column({allowNull: false })
-  store_id: string;
+  storeId: string;
 
   @Column({allowNull: false })
   name: string;
@@ -15,7 +15,10 @@ export class ReviewRequest extends Model {
   email: string;
 
   @Column({allowNull: false })
-  product_id: string;
+  productId: string;
+
+  @Column({allowNull: false })
+  productName: string;
 
   @Column({allowNull: false, defaultValue: false })
   isReviewed: boolean;
