@@ -2,7 +2,7 @@ import { Controller, Get, Query, Res } from '@nestjs/common';
 import { ReviewRequestsService } from './review-requests.service';
 import { Response } from 'express';
 import axios from 'axios';
-import querystring from 'querystring';
+import queryString from 'query-string';
 import { Store } from 'src/store/store.entity';
 import { InjectModel } from '@nestjs/sequelize';
 
@@ -67,7 +67,7 @@ export class ReviewRequestsController {
     try {
       const response = await axios.post(
         accessTokenUrl,
-        querystring.stringify(accessParams),
+        queryString.stringify(accessParams),
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
