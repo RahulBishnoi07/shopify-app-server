@@ -89,7 +89,7 @@ export class ReviewRequestsController {
       await this.reviewRequestsService.registerWebhook(shop, access_token);
 
       // res.send("Successfully connected to Shopify!");
-      return res.redirect(`https://google.co.in`);
+      return res.redirect(`https://admin.shopify.com/store/test-review-ap/apps/testing-mate`);
     } catch (error) {
       console.log(error);
       return res.send('Error while OAuth process');
